@@ -1,8 +1,19 @@
-# Nestjs specific
-/dist
-/node_modules
-/build
-/tmp
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build output
+dist
+build
+.output
+.nuxt
+.nuxtrc
+.turbo
+
+# Tests / coverage
+coverage
+playwright-report
+test-results
 
 # Logs
 logs
@@ -18,7 +29,12 @@ lerna-debug.log*
 .env.development
 .env.test
 .env.production
+.env.local
 
 # temp directory
 .temp
 .tmp
+/tmp
+
+# OS / editor
+.DS_Store
