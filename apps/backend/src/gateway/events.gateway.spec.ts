@@ -86,7 +86,7 @@ describe('EventsGateway', () => {
   })
 
   describe('handleDisconnect', () => {
-    it('ne lève pas d\'erreur', () => {
+    it("ne lève pas d'erreur", () => {
       const client = makeClient()
       expect(() => gateway.handleDisconnect(client)).not.toThrow()
     })

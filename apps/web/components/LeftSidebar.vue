@@ -71,11 +71,20 @@
       >
         <span class="text-xs text-ink-muted">{{ collapsed ? '→' : '←' }}</span>
       </button>
-      <span v-if="!collapsed" class="min-w-0 flex-1 truncate text-xs text-ink-muted">
-        {{ authStore.userEmail }}
-      </span>
+      <div class="flex-1 min-w-0 flex-col items-center gap-2" v-if="!collapsed">
+        <span v-if="!collapsed" class="truncate text-xs text-ink-muted">
+          {{ authStore.userEmail }}
+        </span>
+        <br />
+        <span
+          v-if="!collapsed"
+          class="cursor-pointer text-xs font-semibold text-danger transition-opacity hover:opacity-80"
+          @click="authStore.logout()"
+        >
+          Se déconnecter
+        </span>
+      </div>
     </div>
-
     <ConfirmModal
       v-if="pendingDelete"
       title="Supprimer la liste ?"
