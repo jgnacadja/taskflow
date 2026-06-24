@@ -26,6 +26,17 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(null)
   const isAuthenticated = computed(() => !!accessToken.value)
 
+  const userEmail = computed<string | null>(() => {
+    if (!accessToken.value) return null
+    try {
+      const b64 = accessToken.value.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+      const payload = JSON.parse(atob(b64)) as { email?: string }
+      return payload.email ?? null
+    } catch {
+      return null
+    }
+  })
+
   async function register(payload: RegisterPayload): Promise<void> {
     const config = useRuntimeConfig()
     const data = await $fetch<{ accessToken: string }>('/auth/register', {
@@ -78,5 +89,5 @@ export const useAuthStore = defineStore('auth', () => {
     await navigateTo('/login')
   }
 
-  return { user, accessToken, isAuthenticated, register, login, refresh, logout }
+  return { user, accessToken, isAuthenticated, userEmail, register, login, refresh, logout }
 })
