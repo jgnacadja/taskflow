@@ -1,9 +1,8 @@
 <template>
-  <main>
-    <h1>{{ title }}</h1>
-    <p>Application de gestion de Liste de tâches.</p>
-  </main>
+  <div class="bg-surface">
+    <main>
+      <AppBrand />
+    </main>
+  </div>
 </template>
-<script setup lang="ts">
-const title = 'TaskFlow'
-</script>
+<script setup lang="ts"></script>

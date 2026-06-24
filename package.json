@@ -9,12 +9,17 @@
   },
   "scripts": {
     "dev": "turbo run dev",
+    "dev:web": "pnpm --filter @taskflow/web dev",
+    "dev:backend": "pnpm --filter @taskflow/backend dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,vue,js,json,md,yml,yaml}\"",
     "test": "turbo run test -- --passWithNoTests",
     "test:coverage": "turbo run test:coverage",
-    "test:e2e": "turbo run test:e2e"
+    "test:e2e": "turbo run test:e2e",
+    "db:migrate": "pnpm --filter @taskflow/backend prisma:migrate",
+    "db:generate": "pnpm --filter @taskflow/backend prisma:generate",
+    "db:reset": "pnpm --filter @taskflow/backend exec prisma migrate reset --force"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -23,7 +28,8 @@
       "prisma",
       "@swc/core",
       "esbuild",
-      "@parcel/watcher"
+      "@parcel/watcher",
+      "bcrypt"
     ]
   },
   "devDependencies": {
