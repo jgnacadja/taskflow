@@ -1,5 +1,7 @@
 # TaskFlow
 
+[![CI](https://github.com/jgnacadja/taskflow/actions/workflows/ci.yml/badge.svg)](https://github.com/jgnacadja/taskflow/actions/workflows/ci.yml)
+
 Monorepo **pnpm + Turborepo** : backend **NestJS** + frontend **Nuxt 3** + **PostgreSQL** (Prisma).
 
 ## Stack
@@ -59,6 +61,19 @@ pnpm dev               # lance back + front via turbo
 | `pnpm test:e2e`      | Tests Playwright (frontend)           |
 
 > `test:e2e` requiert les navigateurs Playwright : `pnpm --filter @taskflow/web exec playwright install chromium`.
+
+## CI / GitHub Actions
+
+Deux jobs distincts, segmentés par coût :
+
+| Déclencheur             | `unit-and-lint` | `e2e` |
+| ----------------------- | :-------------: | :---: |
+| Push sur feature branch |       ✅        |   —   |
+| PR → `main`             |       ✅        |   —   |
+| Push sur `main`         |       ✅        |  ✅   |
+
+- **`unit-and-lint`** — lint ESLint + tests Vitest (back + front via Turbo).
+- **`e2e`** — déclenché uniquement sur push `main` (post-merge). Démarre la stack Docker complète, attend les healthchecks, lance Playwright. Tourne en parallèle de `unit-and-lint`.
 
 ## Base de données (Prisma)
 
