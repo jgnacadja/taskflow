@@ -11,7 +11,22 @@ export default defineConfig({
       provider: 'v8',
       reportsDirectory: './coverage',
       include: ['src/**/*.ts'],
-      exclude: ['src/main.ts', 'src/**/*.module.ts', 'src/**/*.spec.ts']
+      exclude: [
+        'src/main.ts',
+        'src/**/*.module.ts',
+        'src/**/*.spec.ts',
+        'src/**/*.dto.ts',
+        'src/**/*.guard.ts',
+        'src/**/*.decorator.ts',
+        'src/config/**'
+      ],
+      reporter: ['text', ['lcov', { file: 'lcov.info' }]],
+      thresholds: {
+        lines: 90,
+        statements: 90,
+        functions: 90,
+        branches: 85
+      }
     }
   },
   plugins: [swc.vite()]
