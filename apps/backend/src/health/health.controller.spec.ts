@@ -12,7 +12,7 @@ describe('HealthController', () => {
     controller = moduleRef.get(HealthController)
   })
 
-  it('renvoie { status: "ok" }', () => {
+  it('returns { status: "ok" }', () => {
     expect(controller.check()).toEqual({ status: 'ok' })
   })
 })

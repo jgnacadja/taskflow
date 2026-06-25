@@ -56,7 +56,7 @@ describe('TasksService', () => {
   })
 
   describe('create', () => {
-    it('crée une tâche et émet task.created', async () => {
+    it('create an task item and emit  task.created', async () => {
       mockListsService.findOne.mockResolvedValue(mockList)
       mockPrisma.task.create.mockResolvedValue(mockTask)
 
@@ -80,7 +80,7 @@ describe('TasksService', () => {
       })
     })
 
-    it('propage ForbiddenException si la liste appartient à un autre utilisateur', async () => {
+    it('propagates ForbiddenException if the list belongs to another user', async () => {
       mockListsService.findOne.mockRejectedValue(new ForbiddenException())
 
       await expect(
@@ -92,7 +92,7 @@ describe('TasksService', () => {
       expect(mockPrisma.task.create).not.toHaveBeenCalled()
     })
 
-    it('propage NotFoundException si la liste est introuvable', async () => {
+    it('propagates NotFoundException if the list is not found', async () => {
       mockListsService.findOne.mockRejectedValue(new NotFoundException())
 
       await expect(
@@ -106,7 +106,7 @@ describe('TasksService', () => {
   })
 
   describe('findAll', () => {
-    it('retourne toutes les tâches de la liste', async () => {
+    it('returns all tasks in the list', async () => {
       mockListsService.findOne.mockResolvedValue(mockList)
       mockPrisma.task.findMany.mockResolvedValue([mockTask])
 
@@ -119,14 +119,14 @@ describe('TasksService', () => {
       })
     })
 
-    it('retourne un tableau vide si aucune tâche', async () => {
+    it('returns an empty array if no tasks', async () => {
       mockListsService.findOne.mockResolvedValue(mockList)
       mockPrisma.task.findMany.mockResolvedValue([])
 
       expect(await service.findAll(USER_ID, LIST_ID)).toEqual([])
     })
 
-    it('propage ForbiddenException si accès refusé', async () => {
+    it('propagates ForbiddenException if access is denied', async () => {
       mockListsService.findOne.mockRejectedValue(new ForbiddenException())
 
       await expect(service.findAll(OTHER_USER_ID, LIST_ID)).rejects.toThrow(ForbiddenException)
@@ -135,7 +135,7 @@ describe('TasksService', () => {
   })
 
   describe('complete', () => {
-    it('marque la tâche comme terminée et émet task.updated', async () => {
+    it('marks the task as completed and emits task.updated', async () => {
       const completed = { ...mockTask, completedAt: new Date() }
       mockPrisma.task.findUnique.mockResolvedValue(mockTaskWithList)
       mockPrisma.task.update.mockResolvedValue(completed)
@@ -153,14 +153,14 @@ describe('TasksService', () => {
       })
     })
 
-    it('lève NotFoundException si la tâche est introuvable', async () => {
+    it('throws NotFoundException if the task is not found', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(null)
 
       await expect(service.complete(USER_ID, 'unknown')).rejects.toThrow(NotFoundException)
       expect(mockPrisma.task.update).not.toHaveBeenCalled()
     })
 
-    it('lève ForbiddenException si la tâche appartient à un autre utilisateur', async () => {
+    it('throws ForbiddenException if the task belongs to another user', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(mockTaskWithList)
 
       await expect(service.complete(OTHER_USER_ID, TASK_ID)).rejects.toThrow(ForbiddenException)
@@ -169,7 +169,7 @@ describe('TasksService', () => {
   })
 
   describe('reactivate', () => {
-    it('remet la tâche en active et émet task.updated', async () => {
+    it('reactivates the task and emits task.updated', async () => {
       const completedTask = { ...mockTaskWithList, completedAt: new Date() }
       const reactivated = { ...mockTask, completedAt: null }
       mockPrisma.task.findUnique.mockResolvedValue(completedTask)
@@ -188,14 +188,14 @@ describe('TasksService', () => {
       })
     })
 
-    it('lève NotFoundException si la tâche est introuvable', async () => {
+    it('throws NotFoundException if the task is not found', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(null)
 
       await expect(service.reactivate(USER_ID, 'unknown')).rejects.toThrow(NotFoundException)
       expect(mockPrisma.task.update).not.toHaveBeenCalled()
     })
 
-    it('lève ForbiddenException si la tâche appartient à un autre utilisateur', async () => {
+    it('throws ForbiddenException if the task belongs to another user', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(mockTaskWithList)
 
       await expect(service.reactivate(OTHER_USER_ID, TASK_ID)).rejects.toThrow(ForbiddenException)
@@ -204,7 +204,7 @@ describe('TasksService', () => {
   })
 
   describe('findOne', () => {
-    it('retourne la tâche sans la relation list si propriétaire', async () => {
+    it('returns the task without the list relation if the owner', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(mockTaskWithList)
 
       const result = await service.findOne(USER_ID, TASK_ID)
@@ -217,13 +217,13 @@ describe('TasksService', () => {
       })
     })
 
-    it('lève NotFoundException si la tâche est introuvable', async () => {
+    it('throws NotFoundException if the task is not found', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(null)
 
       await expect(service.findOne(USER_ID, 'unknown')).rejects.toThrow(NotFoundException)
     })
 
-    it('lève ForbiddenException si la tâche appartient à un autre utilisateur', async () => {
+    it('throws ForbiddenException if the task belongs to another user', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(mockTaskWithList)
 
       await expect(service.findOne(OTHER_USER_ID, TASK_ID)).rejects.toThrow(ForbiddenException)
@@ -231,7 +231,7 @@ describe('TasksService', () => {
   })
 
   describe('remove', () => {
-    it('supprime la tâche et émet task.deleted', async () => {
+    it('deletes the task and emits task.deleted', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(mockTaskWithList)
       mockPrisma.task.delete.mockResolvedValue(mockTask)
 
@@ -244,14 +244,14 @@ describe('TasksService', () => {
       })
     })
 
-    it('lève NotFoundException si la tâche est introuvable', async () => {
+    it('throws NotFoundException if the task is not found', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(null)
 
       await expect(service.remove(USER_ID, 'unknown')).rejects.toThrow(NotFoundException)
       expect(mockPrisma.task.delete).not.toHaveBeenCalled()
     })
 
-    it('lève ForbiddenException si la tâche appartient à un autre utilisateur', async () => {
+    it('throws ForbiddenException if the task belongs to another user', async () => {
       mockPrisma.task.findUnique.mockResolvedValue(mockTaskWithList)
 
       await expect(service.remove(OTHER_USER_ID, TASK_ID)).rejects.toThrow(ForbiddenException)

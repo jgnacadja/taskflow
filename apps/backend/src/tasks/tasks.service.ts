@@ -4,6 +4,10 @@ import { Prisma, Task } from '@prisma/client'
 import { ListsService } from '../lists/lists.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateTaskDto } from './dto/create-task.dto'
+import {
+  PRISMA_FOREIGN_KEY_VIOLATION,
+  PRISMA_NOT_FOUND
+} from '../common/constants/prisma-error-codes'
 
 @Injectable()
 export class TasksService {
@@ -27,7 +31,10 @@ export class TasksService {
       this.eventEmitter.emit('task.created', { listId, task })
       return task
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2003') {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === PRISMA_FOREIGN_KEY_VIOLATION
+      ) {
         throw new NotFoundException('Liste introuvable')
       }
       throw e
@@ -52,7 +59,7 @@ export class TasksService {
       this.eventEmitter.emit('task.updated', { listId: task.listId, task: updated })
       return updated
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === PRISMA_NOT_FOUND) {
         throw new NotFoundException('Tâche introuvable')
       }
       throw e
@@ -69,7 +76,7 @@ export class TasksService {
       this.eventEmitter.emit('task.updated', { listId: task.listId, task: updated })
       return updated
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === PRISMA_NOT_FOUND) {
         throw new NotFoundException('Tâche introuvable')
       }
       throw e
@@ -87,7 +94,7 @@ export class TasksService {
       await this.prisma.task.delete({ where: { id: taskId } })
       this.eventEmitter.emit('task.deleted', { listId: task.listId, taskId })
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === PRISMA_NOT_FOUND) {
         throw new NotFoundException('Tâche introuvable')
       }
       throw e

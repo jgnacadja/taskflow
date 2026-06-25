@@ -26,71 +26,71 @@ const mountDetail = (task: Task | null = mockTask, deleting = false, error: stri
   })
 
 describe('TaskDetail', () => {
-  describe('affichage', () => {
-    it('ne rend pas le panneau si task est null', () => {
+  describe('display', () => {
+    it('does not render the panel if task is null', () => {
       const wrapper = mountDetail(null)
       expect(wrapper.find('[data-testid="detail-panel"]').exists()).toBe(false)
     })
 
-    it('affiche le panneau si task est définie', () => {
+    it('renders the panel if task is defined', () => {
       const wrapper = mountDetail()
       expect(wrapper.find('[data-testid="detail-panel"]').exists()).toBe(true)
     })
 
-    it('affiche la description courte', () => {
+    it('displays the short description', () => {
       const wrapper = mountDetail()
       expect(wrapper.text()).toContain('Ma tâche importante')
     })
 
-    it("affiche la date d'échéance", () => {
+    it('displays the due date', () => {
       const wrapper = mountDetail()
       expect(wrapper.text()).toContain('juil')
     })
 
-    it('affiche la date de création', () => {
+    it('displays the creation date', () => {
       const wrapper = mountDetail()
       expect(wrapper.text()).toContain('janv')
     })
 
-    it('affiche la description longue si présente', () => {
+    it('displays the long description if present', () => {
       const task = { ...mockTask, longDescription: 'Détail complet de la tâche' }
       const wrapper = mountDetail(task)
       expect(wrapper.text()).toContain('Détail complet de la tâche')
     })
 
-    it("n'affiche pas la section description longue si absente", () => {
+    it('does not display the long description section if absent', () => {
       const wrapper = mountDetail()
       expect(wrapper.text()).not.toContain('Description')
     })
 
-    it("affiche le message d'erreur si error est défini", () => {
+    it('displays the error message if error is set', () => {
       const wrapper = mountDetail(mockTask, false, 'Impossible de supprimer la tâche.')
       expect(wrapper.find('[data-testid="delete-error"]').exists()).toBe(true)
       expect(wrapper.text()).toContain('Impossible de supprimer la tâche.')
     })
 
-    it("n'affiche pas de message d'erreur si error est null", () => {
+    it('does not display an error message if error is null', () => {
       const wrapper = mountDetail()
       expect(wrapper.find('[data-testid="delete-error"]').exists()).toBe(false)
     })
   })
 
-  describe('fermeture', () => {
-    it('émet close au clic sur le bouton fermer', async () => {
+  describe('close', () => {
+    it('emits close on close button click', async () => {
       const wrapper = mountDetail()
       await wrapper.find('[data-testid="close-btn"]').trigger('click')
       expect(wrapper.emitted('close')).toBeTruthy()
     })
   })
 
-  describe('suppression', () => {
-    it('affiche la modale de confirmation au clic sur Supprimer', async () => {
+  describe('delete', () => {
+    it('shows the confirmation modal on delete button click', async () => {
       const wrapper = mountDetail()
       await wrapper.find('[data-testid="delete-btn"]').trigger('click')
       expect(wrapper.findComponent({ name: 'ConfirmModal' }).exists()).toBe(true)
     })
 
-    it("masque la modale à l'annulation", async () => {
+    it('hides the modal on cancel', async () => {
       const wrapper = mountDetail()
       await wrapper.find('[data-testid="delete-btn"]').trigger('click')
       wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('cancel')
@@ -98,7 +98,7 @@ describe('TaskDetail', () => {
       expect(wrapper.findComponent({ name: 'ConfirmModal' }).exists()).toBe(false)
     })
 
-    it("émet delete avec l'id de la tâche à la confirmation", async () => {
+    it('emits delete with the task id on confirm', async () => {
       const wrapper = mountDetail()
       await wrapper.find('[data-testid="delete-btn"]').trigger('click')
       wrapper.findComponent({ name: 'ConfirmModal' }).vm.$emit('confirm')
@@ -106,7 +106,7 @@ describe('TaskDetail', () => {
       expect(wrapper.emitted('delete')?.[0]).toEqual([mockTask.id])
     })
 
-    it('réinitialise la modale quand task passe à null', async () => {
+    it('resets the modal when task becomes null', async () => {
       const wrapper = mountDetail()
       await wrapper.find('[data-testid="delete-btn"]').trigger('click')
       expect(wrapper.findComponent({ name: 'ConfirmModal' }).exists()).toBe(true)
@@ -115,7 +115,7 @@ describe('TaskDetail', () => {
       expect(wrapper.findComponent({ name: 'ConfirmModal' }).exists()).toBe(false)
     })
 
-    it('réinitialise la modale quand task change vers une autre tâche', async () => {
+    it('resets the modal when task changes to another task', async () => {
       const wrapper = mountDetail()
       await wrapper.find('[data-testid="delete-btn"]').trigger('click')
       expect(wrapper.findComponent({ name: 'ConfirmModal' }).exists()).toBe(true)

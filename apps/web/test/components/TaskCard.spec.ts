@@ -14,63 +14,63 @@ const mockTask: Task = {
 }
 
 describe('TaskCard', () => {
-  describe('affichage', () => {
-    it('affiche la description courte', () => {
+  describe('display', () => {
+    it('displays the short description', () => {
       const wrapper = mount(TaskCard, { props: { task: mockTask } })
       expect(wrapper.text()).toContain('Ma tâche')
     })
 
-    it("affiche la date d'échéance formatée", () => {
+    it('displays the formatted due date', () => {
       const wrapper = mount(TaskCard, { props: { task: mockTask } })
       expect(wrapper.text()).toContain('juil')
     })
 
-    it('affiche la description longue si présente', () => {
+    it('displays the long description if present', () => {
       const task = { ...mockTask, longDescription: 'Description détaillée' }
       const wrapper = mount(TaskCard, { props: { task } })
       expect(wrapper.text()).toContain('Description détaillée')
     })
 
-    it("n'affiche pas la description longue si absente", () => {
+    it('does not display the long description if absent', () => {
       const wrapper = mount(TaskCard, { props: { task: mockTask } })
       expect(wrapper.text()).not.toContain('Description')
     })
 
-    it('applique opacity-70 si la tâche est terminée', () => {
+    it('applies opacity-70 if the task is completed', () => {
       const task = { ...mockTask, completedAt: new Date().toISOString() }
       const wrapper = mount(TaskCard, { props: { task } })
       expect(wrapper.find('div').classes()).toContain('opacity-70')
     })
 
-    it("n'applique pas opacity-70 si la tâche est active", () => {
+    it('does not apply opacity-70 if the task is active', () => {
       const wrapper = mount(TaskCard, { props: { task: mockTask } })
       expect(wrapper.find('div').classes()).not.toContain('opacity-70')
     })
   })
 
-  describe('bouton complétion', () => {
-    it('émet complete au clic si la tâche est active', async () => {
+  describe('completion button', () => {
+    it('emits complete on click if the task is active', async () => {
       const wrapper = mount(TaskCard, { props: { task: mockTask } })
       await wrapper.find('button').trigger('click')
       expect(wrapper.emitted('complete')?.[0]).toEqual([mockTask.id])
     })
 
-    it('émet reactivate au clic si la tâche est terminée', async () => {
+    it('emits reactivate on click if the task is completed', async () => {
       const task = { ...mockTask, completedAt: new Date().toISOString() }
       const wrapper = mount(TaskCard, { props: { task } })
       await wrapper.find('button').trigger('click')
       expect(wrapper.emitted('reactivate')?.[0]).toEqual([task.id])
     })
 
-    it("n'émet pas select au clic sur le bouton (stop propagation)", async () => {
+    it('does not emit select on button click (stop propagation)', async () => {
       const wrapper = mount(TaskCard, { props: { task: mockTask } })
       await wrapper.find('button').trigger('click')
       expect(wrapper.emitted('select')).toBeUndefined()
     })
   })
 
-  describe('sélection de la carte', () => {
-    it('émet select avec la tâche au clic sur la carte', async () => {
+  describe('card selection', () => {
+    it('emits select with the task on card click', async () => {
       const wrapper = mount(TaskCard, { props: { task: mockTask } })
       await wrapper.find('div').trigger('click')
       expect(wrapper.emitted('select')?.[0]).toEqual([mockTask])
