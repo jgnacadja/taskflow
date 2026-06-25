@@ -36,7 +36,7 @@ describe('ListsController', () => {
   })
 
   describe('create', () => {
-    it('délègue à ListsService.create et retourne la liste créée', async () => {
+    it('delegates to ListsService.create and returns the created list', async () => {
       mockListsService.create.mockResolvedValue(mockList)
       const dto: CreateListDto = { name: 'Ma liste' }
 
@@ -48,7 +48,7 @@ describe('ListsController', () => {
   })
 
   describe('findAll', () => {
-    it("délègue à ListsService.findAll et retourne les listes de l'utilisateur", async () => {
+    it("delegates to ListsService.findAll and returns the user's lists", async () => {
       mockListsService.findAll.mockResolvedValue([mockList])
 
       const result = await controller.findAll(mockUser)
@@ -59,7 +59,7 @@ describe('ListsController', () => {
   })
 
   describe('remove', () => {
-    it("délègue à ListsService.remove avec l'id utilisateur et l'id de la liste", async () => {
+    it('delegates to ListsService.remove with userId and listId', async () => {
       mockListsService.remove.mockResolvedValue(undefined)
 
       await controller.remove(mockUser, LIST_ID)

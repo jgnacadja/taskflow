@@ -7,6 +7,7 @@ import {
 import { Prisma, List } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateListDto } from './dto/create-list.dto'
+import { PRISMA_NOT_FOUND, PRISMA_UNIQUE_VIOLATION } from '../common/constants/prisma-error-codes'
 
 @Injectable()
 export class ListsService {
@@ -16,7 +17,7 @@ export class ListsService {
     try {
       return await this.prisma.list.create({ data: { name: dto.name, userId } })
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === PRISMA_UNIQUE_VIOLATION) {
         throw new ConflictException('Une liste avec ce nom existe déjà')
       }
       throw e
@@ -42,7 +43,7 @@ export class ListsService {
     try {
       await this.prisma.list.delete({ where: { id: listId } })
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === PRISMA_NOT_FOUND) {
         throw new NotFoundException('Liste introuvable')
       }
       throw e

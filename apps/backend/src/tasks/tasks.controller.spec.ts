@@ -25,7 +25,9 @@ const mockTasksService = {
   create: vi.fn(),
   findAll: vi.fn(),
   complete: vi.fn(),
-  reactivate: vi.fn()
+  reactivate: vi.fn(),
+  findOne: vi.fn(),
+  remove: vi.fn()
 }
 
 describe('TasksController', () => {
@@ -42,7 +44,7 @@ describe('TasksController', () => {
   })
 
   describe('create', () => {
-    it('délègue à TasksService.create avec userId, listId et dto', async () => {
+    it('delegates to TasksService.create with userId, listId and dto', async () => {
       mockTasksService.create.mockResolvedValue(mockTask)
       const dto: CreateTaskDto = {
         shortDescription: 'Ma tâche',
@@ -57,7 +59,7 @@ describe('TasksController', () => {
   })
 
   describe('findAll', () => {
-    it('délègue à TasksService.findAll avec userId et listId', async () => {
+    it('delegates to TasksService.findAll with userId and listId', async () => {
       mockTasksService.findAll.mockResolvedValue([mockTask])
 
       const result = await controller.findAll(mockUser, LIST_ID)
@@ -68,7 +70,7 @@ describe('TasksController', () => {
   })
 
   describe('complete', () => {
-    it('délègue à TasksService.complete avec userId et taskId', async () => {
+    it('delegates to TasksService.complete with userId and taskId', async () => {
       const completed = { ...mockTask, completedAt: new Date() }
       mockTasksService.complete.mockResolvedValue(completed)
 
@@ -80,13 +82,35 @@ describe('TasksController', () => {
   })
 
   describe('reactivate', () => {
-    it('délègue à TasksService.reactivate avec userId et taskId', async () => {
+    it('delegates to TasksService.reactivate with userId and taskId', async () => {
       mockTasksService.reactivate.mockResolvedValue(mockTask)
 
       const result = await controller.reactivate(mockUser, TASK_ID)
 
       expect(result).toEqual(mockTask)
       expect(mockTasksService.reactivate).toHaveBeenCalledWith(USER_ID, TASK_ID)
+    })
+  })
+
+  describe('findOne', () => {
+    it('delegates to TasksService.findOne with userId and taskId', async () => {
+      mockTasksService.findOne.mockResolvedValue(mockTask)
+
+      const result = await controller.findOne(mockUser, TASK_ID)
+
+      expect(result).toEqual(mockTask)
+      expect(mockTasksService.findOne).toHaveBeenCalledWith(USER_ID, TASK_ID)
+    })
+  })
+
+  describe('remove', () => {
+    it('delegates to TasksService.remove with userId and taskId', async () => {
+      mockTasksService.remove.mockResolvedValue(undefined)
+
+      const result = await controller.remove(mockUser, TASK_ID)
+
+      expect(result).toBeUndefined()
+      expect(mockTasksService.remove).toHaveBeenCalledWith(USER_ID, TASK_ID)
     })
   })
 })

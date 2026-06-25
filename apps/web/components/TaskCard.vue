@@ -1,7 +1,8 @@
 <template>
   <div
-    class="flex items-start gap-3 rounded-xl border border-[#e4e3dd] bg-white p-4 transition-opacity"
+    class="flex cursor-pointer items-start gap-3 rounded-xl border border-[#e4e3dd] bg-white p-4 transition-opacity"
     :class="task.completedAt ? 'opacity-70' : ''"
+    @click="$emit('select', task)"
   >
     <button
       class="mt-0.5 flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-2 transition-colors"
@@ -11,7 +12,7 @@
           : 'border-ink-muted hover:border-primary'
       "
       :aria-label="task.completedAt ? 'Réactiver' : 'Terminer'"
-      @click="task.completedAt ? $emit('reactivate', task.id) : $emit('complete', task.id)"
+      @click.stop="task.completedAt ? $emit('reactivate', task.id) : $emit('complete', task.id)"
     >
       <span v-if="task.completedAt" class="text-[10px] font-bold leading-none">✓</span>
     </button>
@@ -27,19 +28,21 @@
         {{ task.longDescription }}
       </p>
       <p class="mt-1 text-xs" :class="isOverdue ? 'text-danger font-semibold' : 'text-ink-muted'">
-        {{ formatDueDate(task.dueDate) }}
+        {{ formatDate(task.dueDate) }}
       </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { formatDate } from '~/utils/date'
 import type { Task } from '~/stores/tasks'
 
 const props = defineProps<{ task: Task }>()
 defineEmits<{
   complete: [id: string]
   reactivate: [id: string]
+  select: [task: Task]
 }>()
 
 const isOverdue = computed(() => {
@@ -48,12 +51,4 @@ const isOverdue = computed(() => {
   const todayStr = new Date().toLocaleDateString('en-CA')
   return dueDay < todayStr
 })
-
-function formatDueDate(iso: string): string {
-  return new Intl.DateTimeFormat('fr-FR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  }).format(new Date(iso))
-}
 </script>

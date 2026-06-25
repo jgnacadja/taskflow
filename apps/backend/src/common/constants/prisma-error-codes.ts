@@ -1,0 +1,3 @@
+export const PRISMA_UNIQUE_VIOLATION = 'P2002'
+export const PRISMA_FOREIGN_KEY_VIOLATION = 'P2003'
+export const PRISMA_NOT_FOUND = 'P2025'

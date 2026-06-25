@@ -41,7 +41,7 @@ describe('EventsGateway', () => {
   })
 
   describe('handleConnection', () => {
-    it('stocke le payload JWT dans client.data.user si le token est valide', () => {
+    it('stores the JWT payload in client.data.user when the token is valid', () => {
       const client = makeClient('valid-token')
       const payload = { sub: 'user-1', email: 'test@example.com' }
       mockJwtService.verify.mockReturnValue(payload)
@@ -52,7 +52,7 @@ describe('EventsGateway', () => {
       expect(client.disconnect).not.toHaveBeenCalled()
     })
 
-    it('déconnecte si aucun token fourni', () => {
+    it('disconnects if no token is provided', () => {
       const client = makeClient()
 
       gateway.handleConnection(client)
@@ -60,7 +60,7 @@ describe('EventsGateway', () => {
       expect(client.disconnect).toHaveBeenCalledWith(true)
     })
 
-    it('déconnecte si le token est invalide', () => {
+    it('disconnects if the token is invalid', () => {
       const client = makeClient('bad-token')
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('invalid token')
@@ -71,7 +71,7 @@ describe('EventsGateway', () => {
       expect(client.disconnect).toHaveBeenCalledWith(true)
     })
 
-    it('accepte le token depuis le header Authorization', () => {
+    it('accepts the token from the Authorization header', () => {
       const client = makeClient(undefined, {
         handshake: { auth: {}, headers: { authorization: 'Bearer header-token' } }
       })
@@ -86,14 +86,14 @@ describe('EventsGateway', () => {
   })
 
   describe('handleDisconnect', () => {
-    it("ne lève pas d'erreur", () => {
+    it('does not throw', () => {
       const client = makeClient()
       expect(() => gateway.handleDisconnect(client)).not.toThrow()
     })
   })
 
   describe('handleJoinList', () => {
-    it("rejoint la room si l'utilisateur est propriétaire de la liste", async () => {
+    it('joins the room if the user owns the list', async () => {
       const client = makeClient()
       client.data.user = { sub: 'user-1', email: 'test@example.com' }
       mockListsService.findOne.mockResolvedValue({ id: 'list-1', userId: 'user-1' })
@@ -104,7 +104,7 @@ describe('EventsGateway', () => {
       expect(client.join).toHaveBeenCalledWith('list:list-1')
     })
 
-    it("lève WsException si l'utilisateur n'est pas propriétaire", async () => {
+    it('throws WsException if the user is not the owner', async () => {
       const client = makeClient()
       client.data.user = { sub: 'user-2', email: 'other@example.com' }
       mockListsService.findOne.mockRejectedValue(new Error('Accès refusé'))
@@ -117,7 +117,7 @@ describe('EventsGateway', () => {
   })
 
   describe('handleLeaveList', () => {
-    it('quitte la room correspondante', () => {
+    it('leaves the corresponding room', () => {
       const client = makeClient()
 
       gateway.handleLeaveList(client, { listId: 'list-1' })
@@ -127,7 +127,7 @@ describe('EventsGateway', () => {
   })
 
   describe('onTaskCreated', () => {
-    it('émet task:created vers la room de la liste', () => {
+    it('emits task:created to the list room', () => {
       gateway.onTaskCreated({ listId: 'list-1', task: { id: 'task-1' } })
 
       expect(mockServer.to).toHaveBeenCalledWith('list:list-1')
@@ -136,7 +136,7 @@ describe('EventsGateway', () => {
   })
 
   describe('onTaskUpdated', () => {
-    it('émet task:updated vers la room de la liste', () => {
+    it('emits task:updated to the list room', () => {
       gateway.onTaskUpdated({ listId: 'list-1', task: { id: 'task-1', title: 'updated' } })
 
       expect(mockServer.to).toHaveBeenCalledWith('list:list-1')
@@ -148,7 +148,7 @@ describe('EventsGateway', () => {
   })
 
   describe('onTaskDeleted', () => {
-    it('émet task:deleted vers la room de la liste', () => {
+    it('emits task:deleted to the list room', () => {
       gateway.onTaskDeleted({ listId: 'list-1', taskId: 'task-1' })
 
       expect(mockServer.to).toHaveBeenCalledWith('list:list-1')

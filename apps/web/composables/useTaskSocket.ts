@@ -24,6 +24,7 @@ export function useTaskSocket(): void {
     if (task.listId === currentListId) tasksStore.onTaskCreated(task)
   }
   const onUpdated = (task: Task) => tasksStore.onTaskUpdated(task)
+  const onDeleted = (payload: { id: string }) => tasksStore.onTaskDeleted(payload)
   const onConnect = () => {
     if (currentListId) {
       $socket.emit('join-list', { listId: currentListId })
@@ -36,6 +37,7 @@ export function useTaskSocket(): void {
 
     $socket.on('task:created', onCreated)
     $socket.on('task:updated', onUpdated)
+    $socket.on('task:deleted', onDeleted)
     $socket.on('connect', onConnect)
 
     stopWatch = watch(
@@ -60,6 +62,7 @@ export function useTaskSocket(): void {
     stopWatch?.()
     $socket.off('task:created', onCreated)
     $socket.off('task:updated', onUpdated)
+    $socket.off('task:deleted', onDeleted)
     $socket.off('connect', onConnect)
     if (currentListId) {
       $socket.emit('leave-list', { listId: currentListId })
