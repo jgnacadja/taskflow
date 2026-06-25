@@ -80,7 +80,7 @@ describe('EventsGateway', () => {
 
       gateway.handleConnection(client)
 
-      expect(mockJwtService.verify).toHaveBeenCalledWith('header-token', expect.any(Object))
+      expect(mockJwtService.verify).toHaveBeenCalledWith('header-token')
       expect(client.disconnect).not.toHaveBeenCalled()
     })
   })
