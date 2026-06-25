@@ -53,9 +53,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     try {
-      const payload = this.jwtService.verify<{ sub: string; email: string }>(token, {
-        secret: process.env.JWT_SECRET ?? 'change-me'
-      })
+      const payload = this.jwtService.verify<{ sub: string; email: string }>(token)
       client.data.user = payload
       this.logger.log(`[WS] connecté : ${payload.email} (${client.id})`)
     } catch {
