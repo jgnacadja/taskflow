@@ -169,7 +169,7 @@ const form = reactive({
 function submit() {
   handleSubmit(async () => {
     await auth.register(form)
-    await navigateTo('/')
+    await navigateTo('/login')
   })
 }
 </script>

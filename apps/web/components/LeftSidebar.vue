@@ -26,7 +26,9 @@
             +
           </button>
         </form>
-        <p v-if="createError" class="mt-1.5 text-xs text-danger">{{ createError }}</p>
+        <p v-if="createError" class="mt-1.5 text-xs text-danger" data-testid="list-error">
+          {{ createError }}
+        </p>
       </div>
 
       <nav class="flex-1 overflow-y-auto px-2 pb-4">

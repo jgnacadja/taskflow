@@ -11,6 +11,7 @@
 
     <p
       v-if="error"
+      id="alert-auth"
       role="alert"
       class="px-[14px] py-3 rounded-[10px] bg-[var(--error-soft)] border border-danger/20 text-[13px] text-danger mb-[14px]"
     >

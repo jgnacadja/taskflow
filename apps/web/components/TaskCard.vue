@@ -2,6 +2,7 @@
   <div
     class="flex cursor-pointer items-start gap-3 rounded-xl border border-[#e4e3dd] bg-white p-4 transition-opacity"
     :class="task.completedAt ? 'opacity-70' : ''"
+    data-testid="task-card"
     @click="$emit('select', task)"
   >
     <button

@@ -32,7 +32,9 @@
       />
     </div>
 
-    <p v-if="error" class="px-4 pb-2 text-xs text-danger">{{ error }}</p>
+    <p v-if="error" class="px-4 pb-2 text-xs text-danger" data-testid="task-form-error">
+      {{ error }}
+    </p>
   </form>
 </template>
 
@@ -56,7 +58,11 @@ function isValid(): boolean {
 }
 
 async function handleSubmit(): Promise<void> {
-  if (!isValid() || submitting.value) return
+  if (submitting.value) return
+  if (!isValid()) {
+    error.value = 'Le titre est obligatoire'
+    return
+  }
   submitting.value = true
   error.value = null
   try {
