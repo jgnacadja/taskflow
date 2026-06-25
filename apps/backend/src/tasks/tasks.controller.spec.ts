@@ -25,7 +25,9 @@ const mockTasksService = {
   create: vi.fn(),
   findAll: vi.fn(),
   complete: vi.fn(),
-  reactivate: vi.fn()
+  reactivate: vi.fn(),
+  findOne: vi.fn(),
+  remove: vi.fn()
 }
 
 describe('TasksController', () => {
@@ -87,6 +89,28 @@ describe('TasksController', () => {
 
       expect(result).toEqual(mockTask)
       expect(mockTasksService.reactivate).toHaveBeenCalledWith(USER_ID, TASK_ID)
+    })
+  })
+
+  describe('findOne', () => {
+    it('délègue à TasksService.findOne avec userId et taskId', async () => {
+      mockTasksService.findOne.mockResolvedValue(mockTask)
+
+      const result = await controller.findOne(mockUser, TASK_ID)
+
+      expect(result).toEqual(mockTask)
+      expect(mockTasksService.findOne).toHaveBeenCalledWith(USER_ID, TASK_ID)
+    })
+  })
+
+  describe('remove', () => {
+    it('délègue à TasksService.remove avec userId et taskId', async () => {
+      mockTasksService.remove.mockResolvedValue(undefined)
+
+      const result = await controller.remove(mockUser, TASK_ID)
+
+      expect(result).toBeUndefined()
+      expect(mockTasksService.remove).toHaveBeenCalledWith(USER_ID, TASK_ID)
     })
   })
 })

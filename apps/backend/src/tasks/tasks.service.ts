@@ -43,12 +43,7 @@ export class TasksService {
   }
 
   async complete(userId: string, taskId: string): Promise<Task> {
-    const task = await this.prisma.task.findUnique({
-      where: { id: taskId },
-      include: { list: true }
-    })
-    if (!task) throw new NotFoundException('Tâche introuvable')
-    if (task.list.userId !== userId) throw new ForbiddenException('Accès refusé')
+    const task = await this.findTaskAndAssertOwner(userId, taskId)
     try {
       const updated = await this.prisma.task.update({
         where: { id: taskId },
@@ -65,12 +60,7 @@ export class TasksService {
   }
 
   async reactivate(userId: string, taskId: string): Promise<Task> {
-    const task = await this.prisma.task.findUnique({
-      where: { id: taskId },
-      include: { list: true }
-    })
-    if (!task) throw new NotFoundException('Tâche introuvable')
-    if (task.list.userId !== userId) throw new ForbiddenException('Accès refusé')
+    const task = await this.findTaskAndAssertOwner(userId, taskId)
     try {
       const updated = await this.prisma.task.update({
         where: { id: taskId },
@@ -84,5 +74,33 @@ export class TasksService {
       }
       throw e
     }
+  }
+
+  async findOne(userId: string, taskId: string): Promise<Task> {
+    const { list: _list, ...task } = await this.findTaskAndAssertOwner(userId, taskId)
+    return task
+  }
+
+  async remove(userId: string, taskId: string): Promise<void> {
+    const task = await this.findTaskAndAssertOwner(userId, taskId)
+    try {
+      await this.prisma.task.delete({ where: { id: taskId } })
+      this.eventEmitter.emit('task.deleted', { listId: task.listId, taskId })
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('Tâche introuvable')
+      }
+      throw e
+    }
+  }
+
+  private async findTaskAndAssertOwner(userId: string, taskId: string) {
+    const task = await this.prisma.task.findUnique({
+      where: { id: taskId },
+      include: { list: true }
+    })
+    if (!task) throw new NotFoundException('Tâche introuvable')
+    if (task.list.userId !== userId) throw new ForbiddenException('Accès refusé')
+    return task
   }
 }

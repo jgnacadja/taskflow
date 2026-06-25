@@ -1,7 +1,10 @@
 <template>
-  <div class="flex min-h-screen">
+  <div class="flex h-screen">
     <LeftSidebar />
-    <main class="flex min-w-0 flex-1 flex-col px-12 py-10">
+    <main
+      class="flex min-w-0 flex-1 flex-col overflow-y-auto px-12 py-10"
+      @click.self="selectedTask = null"
+    >
       <template v-if="selectedList">
         <div class="mb-6 flex items-start justify-between gap-4">
           <div>
@@ -34,6 +37,7 @@
             :task="task"
             @complete="tasksStore.completeTask(task.id)"
             @reactivate="tasksStore.reactivateTask(task.id)"
+            @select="selectedTask = task"
           />
         </div>
         <p v-else-if="!showForm" class="py-8 text-center text-sm text-ink-muted">
@@ -57,6 +61,7 @@
               :task="task"
               @complete="tasksStore.completeTask(task.id)"
               @reactivate="tasksStore.reactivateTask(task.id)"
+              @select="selectedTask = task"
             />
           </div>
         </div>
@@ -66,6 +71,14 @@
         Sélectionnez ou créez une liste pour commencer.
       </p>
     </main>
+
+    <TaskDetail
+      :task="selectedTask"
+      :deleting="deleting"
+      :error="deleteError"
+      @close="closeDetail"
+      @delete="handleDelete"
+    />
   </div>
 </template>
 
@@ -74,6 +87,7 @@ import { onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useListsStore } from '~/stores/lists'
 import { useTasksStore } from '~/stores/tasks'
+import type { Task } from '~/stores/tasks'
 import { useTaskSocket } from '~/composables/useTaskSocket'
 
 const listsStore = useListsStore()
@@ -83,10 +97,41 @@ const { tasks, completedTasks } = storeToRefs(tasksStore)
 
 const showForm = ref(false)
 const showCompleted = ref(false)
+const selectedTask = ref<Task | null>(null)
+const deleting = ref(false)
+const deleteError = ref<string | null>(null)
 
 watch(selectedList, () => {
   showForm.value = false
+  selectedTask.value = null
 })
+
+watch([tasks, completedTasks], () => {
+  if (selectedTask.value) {
+    const id = selectedTask.value.id
+    const stillExists =
+      tasks.value.some((t) => t.id === id) || completedTasks.value.some((t) => t.id === id)
+    if (!stillExists) selectedTask.value = null
+  }
+})
+
+function closeDetail(): void {
+  selectedTask.value = null
+  deleteError.value = null
+}
+
+async function handleDelete(taskId: string): Promise<void> {
+  deleting.value = true
+  deleteError.value = null
+  try {
+    await tasksStore.deleteTask(taskId)
+    selectedTask.value = null
+  } catch {
+    deleteError.value = 'Impossible de supprimer la tâche. Veuillez réessayer.'
+  } finally {
+    deleting.value = false
+  }
+}
 
 onMounted(async () => {
   await listsStore.fetchLists()

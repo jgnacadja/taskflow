@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -13,6 +14,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -71,5 +73,24 @@ export class TasksController {
   @ApiNotFoundResponse({ description: 'Tâche introuvable' })
   reactivate(@CurrentUser() user: User, @Param('id') id: string): Promise<Task> {
     return this.tasksService.reactivate(user.id, id)
+  }
+
+  @Get('tasks/:id')
+  @ApiOperation({ summary: "Récupérer le détail d'une tâche" })
+  @ApiOkResponse({ description: 'Détail de la tâche' })
+  @ApiForbiddenResponse({ description: 'Accès refusé' })
+  @ApiNotFoundResponse({ description: 'Tâche introuvable' })
+  findOne(@CurrentUser() user: User, @Param('id') id: string): Promise<Task> {
+    return this.tasksService.findOne(user.id, id)
+  }
+
+  @Delete('tasks/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Supprimer une tâche' })
+  @ApiNoContentResponse({ description: 'Tâche supprimée' })
+  @ApiForbiddenResponse({ description: 'Accès refusé' })
+  @ApiNotFoundResponse({ description: 'Tâche introuvable' })
+  remove(@CurrentUser() user: User, @Param('id') id: string): Promise<void> {
+    return this.tasksService.remove(user.id, id)
   }
 }

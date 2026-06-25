@@ -89,6 +89,17 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
+  async function deleteTask(taskId: string): Promise<void> {
+    const { $api } = useNuxtApp()
+    await $api(`/tasks/${taskId}`, { method: 'DELETE' })
+    onTaskDeleted({ id: taskId })
+  }
+
+  function onTaskDeleted({ id }: { id: string }): void {
+    tasks.value = tasks.value.filter((t) => t.id !== id)
+    completedTasks.value = completedTasks.value.filter((t) => t.id !== id)
+  }
+
   function $reset(): void {
     tasks.value = []
     completedTasks.value = []
@@ -103,6 +114,8 @@ export const useTasksStore = defineStore('tasks', () => {
     completeTask,
     reactivateTask,
     onTaskUpdated,
+    deleteTask,
+    onTaskDeleted,
     $reset
   }
 })
