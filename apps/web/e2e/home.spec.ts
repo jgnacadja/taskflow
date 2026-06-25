@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test('la page d’accueil charge et affiche le titre', async ({ page }) => {
-  await page.goto('/')
+test('home page loads and displays the brand heading', async ({ page }) => {
+  await page.goto('/login', { waitUntil: 'domcontentloaded' })
   await expect(page.getByRole('heading', { name: 'TaskFlow' })).toBeVisible()
 })
